@@ -24,16 +24,16 @@ function App() {
   // 事件與資料流 : 單一事件處理器對應多個 input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((preData) => ({
-      ...preData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   // 行為 : 送出目前的 formData
   const onSubmit = async (e) => {
+    e.preventDefault(); // 暫停預設事件
     try {
-      e.preventDefault(); // 暫停預設事件
       const response = await axios.post(`${API_BASE}/admin/signin`, formData);
       const { token, expired } = response.data; // 取得 cookie
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`; // 將 Token 存在 cookie 的方法
@@ -42,7 +42,7 @@ function App() {
       getProducts();
     } catch (error) {
       setIsAuth(false);
-      console.log(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 
@@ -57,7 +57,7 @@ function App() {
       const response = await axios.post(`${API_BASE}/api/user/check`);
       console.log(response);
     } catch (error) {
-      console.log(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 
@@ -67,7 +67,7 @@ function App() {
       const response = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
       setProducts(response.data.products);
     } catch (error) {
-      console.log(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 
@@ -82,8 +82,9 @@ function App() {
               <input
                 type="email"
                 className="form-control"
-                id="username"
+                name="username"
                 placeholder="name@example.com"
+                value={formData.username}
                 onChange={(e) => handleInputChange(e)}
               />
               <label htmlFor="username">Email address</label>
@@ -92,8 +93,9 @@ function App() {
               <input
                 type="password"
                 className="form-control"
-                id="password"
+                name="password"
                 placeholder="Password"
+                value={formData.password}
                 onChange={(e) => handleInputChange(e)}
               />
               <label htmlFor="password">Password</label>
